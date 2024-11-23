@@ -55,6 +55,10 @@ const App = () => {
 
   const convertPlanToMermaid = (planData) => {
     const plan = planData[0].Plan;
+    const totalExecutionTime = plan["Actual Total Time"];
+    if (!totalExecutionTime) {
+      throw new Error("Actual Total Time is not available in the root node.");
+    }
     let mermaidCode = "graph LR\n";
     let nodeCounter = 0;
 
@@ -72,26 +76,33 @@ const App = () => {
       // Add more mappings as needed
     };
 
-    const processNode = (node, parentId = null) => {
+    const processNode = (node, parentId = null, totalExecutionTime) => {
       const currentId = `node${nodeCounter++}`;
-      const costs = `${node["Total Cost"].toFixed(2)}`;
+      const costs = `${node["Total Cost"].toFixed(1)}`;
       const rows =
         node["Actual Rows"] !== undefined ? `${node["Actual Rows"]} rows` : "";
       const nodeType = node["Node Type"];
       const nodeDescription = nodeTypeDescriptions[nodeType] || nodeType;
-      const totalCost = node["Total Cost"]
-        ? `Cost: ${node["Total Cost"].toFixed(2)}`
-        : "";
-      const actualRows =
-        node["Actual Rows"] !== undefined ? `Rows: ${node["Actual Rows"]}` : "";
+      // const totalCost = node["Total Cost"]
+      //   ? `Cost: ${node["Total Cost"].toFixed(2)}`
+      //   : "";
+      // const actualRows =
+      //   node["Actual Rows"] !== undefined ? `Rows: ${node["Actual Rows"]}` : "";
       const actualTime = node["Actual Total Time"]
-        ? `Time: ${node["Actual Total Time"].toFixed(2)}ms`
+        ? `Time: ${node["Actual Total Time"].toFixed(1)}ms`
+        : "";
+      const timePercentage = (
+        (node["Actual Total Time"] / totalExecutionTime) *
+        100
+      ).toFixed(1);
+
+      const actualTimeStr = node["Actual Total Time"]
+        ? `${node["Actual Total Time"].toFixed(1)}ms (${timePercentage}%)`
         : "";
 
-      const nodeDetails = [totalCost, actualRows, actualTime]
-        .filter(Boolean)
-        .join(", ");
-      const nodeLabel = escapeMermaidText(`${nodeDescription}\n${nodeDetails}`);
+      const nodeLabel = escapeMermaidText(
+        `<strong>${nodeDescription}</strong><br>${actualTimeStr}`,
+      );
 
       // Determine node class
       let nodeClass = "";
@@ -130,14 +141,14 @@ const App = () => {
       // Process child nodes
       if (node.Plans) {
         node.Plans.forEach((childNode) => {
-          processNode(childNode, currentId);
+          processNode(childNode, currentId, totalExecutionTime);
         });
       }
 
       return currentId;
     };
 
-    processNode(plan);
+    processNode(plan, null, totalExecutionTime);
     // Add class definitions
     mermaidCode += `
       classDef scan fill:#1e7a96,stroke:#219ebc,stroke-width:2px;
@@ -163,6 +174,7 @@ const App = () => {
             id="queryPlan"
             className="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded"
             placeholder="Paste your query plan JSON here..."
+            rows="20"
             value={queryPlan}
             onChange={(e) => setQueryPlan(e.target.value)}
           ></textarea>
