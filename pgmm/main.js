@@ -140,7 +140,7 @@ const App = () => {
     processNode(plan);
     // Add class definitions
     mermaidCode += `
-      classDef scan fill:#8ecae6,stroke:#219ebc,stroke-width:2px;
+      classDef scan fill:#1e7a96,stroke:#219ebc,stroke-width:2px;
       classDef join fill:#00b703,stroke:#fb8500,stroke-width:2px;
       classDef aggregate fill:#9b5de5,stroke:#f15bb5,stroke-width:2px;
       classDef expensive fill:#00006e,stroke:#8338ec,stroke-width:4px;
