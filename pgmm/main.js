@@ -18,6 +18,33 @@ mermaid.initialize({
   },
 });
 
+// Function to humanize times
+const formatTime = (timeInMs) => {
+  if (timeInMs < 1000) {
+    return `${timeInMs.toFixed(0)}ms`;
+  } else {
+    return `${(timeInMs / 1000).toFixed(2)}s`;
+  }
+};
+
+// Function to format numbers with commas and abbreviations
+const formatNumber = (number) => {
+  if (number < 1000) {
+    return number.toString();
+  } else if (number < 1_000_000) {
+    return (number / 1000).toFixed(1) + "k";
+  } else if (number < 1_000_000_000) {
+    return (number / 1_000_000).toFixed(1) + "M";
+  } else {
+    return (number / 1_000_000_000).toFixed(1) + "B";
+  }
+};
+
+// Function to add commas as thousands separators
+const formatWithCommas = (number) => {
+  return number.toLocaleString();
+};
+
 const App = () => {
   const [queryPlan, setQueryPlan] = useState("");
   const [explainAnalyze, setExplainAnalyze] = useState("");
@@ -82,7 +109,25 @@ const App = () => {
       const rows =
         node["Actual Rows"] !== undefined ? `${node["Actual Rows"]} rows` : "";
       const nodeType = node["Node Type"];
-      const nodeDescription = nodeTypeDescriptions[nodeType] || nodeType;
+      let nodeDescription = nodeTypeDescriptions[nodeType] || nodeType;
+      let scanTarget = "";
+
+      if (
+        nodeType === "Seq Scan" ||
+        nodeType === "Index Scan" ||
+        nodeType === "Index Only Scan"
+      ) {
+        if (node["Relation Name"]) {
+          scanTarget = node["Relation Name"];
+        }
+        if (node["Index Name"]) {
+          scanTarget = node["Index Name"];
+        }
+      }
+
+      if (scanTarget) {
+        nodeDescription += ` (${scanTarget})`;
+      }
       // const totalCost = node["Total Cost"]
       //   ? `Cost: ${node["Total Cost"].toFixed(2)}`
       //   : "";
@@ -97,7 +142,7 @@ const App = () => {
       ).toFixed(1);
 
       const actualTimeStr = node["Actual Total Time"]
-        ? `${node["Actual Total Time"].toFixed(1)}ms (${timePercentage}%)`
+        ? `${formatTime(node["Actual Total Time"])} (${timePercentage}%)`
         : "";
 
       const nodeLabel = escapeMermaidText(
@@ -126,14 +171,8 @@ const App = () => {
       // Add edge from parent to current node
       if (parentId !== null) {
         let edgeLabel = "";
-        if (node["Index Cond"]) {
-          edgeLabel = escapeMermaidText(node["Index Cond"]);
-        } else if (node["Hash Cond"]) {
-          edgeLabel = escapeMermaidText(node["Hash Cond"]);
-        } else if (node["Join Filter"]) {
-          edgeLabel = escapeMermaidText(node["Join Filter"]);
-        } else if (node["Filter"]) {
-          edgeLabel = escapeMermaidText(node["Filter"]);
+        if (node["Actual Rows"] !== undefined) {
+          edgeLabel = formatNumber(node["Actual Rows"]);
         }
         mermaidCode += `    ${parentId} -->${edgeLabel ? `|"${edgeLabel}"|` : ""} ${currentId}\n`;
       }
