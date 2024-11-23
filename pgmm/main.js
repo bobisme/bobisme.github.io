@@ -13,7 +13,7 @@ mermaid.initialize({
   theme: "dark",
   flowchart: {
     curve: "basis",
-    padding: 50, // Adjust padding as needed
+    padding: 30, // Adjust padding as needed
     useMaxWidth: false,
   },
 });
@@ -60,6 +60,8 @@ const App = () => {
       setMermaidCode(code);
       setShowDiagram(true);
       setError("");
+      // Save the query plan to localStorage
+      localStorage.setItem("savedQueryPlan", queryPlan);
     } catch (err) {
       setError("Error processing query plan: " + err.message);
       setShowDiagram(false);
@@ -79,6 +81,14 @@ const App = () => {
         });
     }
   }, [mermaidCode]);
+
+  // Load the saved query plan from localStorage, if it exists
+  useEffect(() => {
+    const savedPlan = localStorage.getItem("savedQueryPlan");
+    if (savedPlan) {
+      setQueryPlan(savedPlan);
+    }
+  }, []);
 
   const convertPlanToMermaid = (planData) => {
     const plan = planData[0].Plan;
@@ -125,8 +135,9 @@ const App = () => {
         }
       }
 
+      let st = "";
       if (scanTarget) {
-        nodeDescription += ` (${scanTarget})`;
+        st = ` - <span style=color:lightyellow>${scanTarget}</span>`;
       }
       // const totalCost = node["Total Cost"]
       //   ? `Cost: ${node["Total Cost"].toFixed(2)}`
@@ -146,7 +157,7 @@ const App = () => {
         : "";
 
       const nodeLabel = escapeMermaidText(
-        `<strong>${nodeDescription}</strong><br>${actualTimeStr}`,
+        `<strong>${nodeDescription}</strong>${st}<br>${actualTimeStr}`,
       );
 
       // Determine node class
@@ -239,6 +250,18 @@ const App = () => {
           className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-500 disabled:bg-gray-600"
         >
           Visualize Query Plan
+        </button>
+        <button
+          onClick={() => {
+            localStorage.removeItem("savedQueryPlan");
+            setQueryPlan("");
+            setMermaidCode("");
+            setRenderedDiagram("");
+            setShowDiagram(false);
+          }}
+          className="w-full p-2 bg-red-600 text-white rounded hover:bg-red-500 mt-2"
+        >
+          Clear Saved Plan
         </button>
         {showDiagram && (
           <div
