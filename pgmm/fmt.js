@@ -8,15 +8,15 @@ export const formatTime = (timeInMs) => {
 };
 
 // Function to format numbers with commas and abbreviations
-export const formatNumber = (number) => {
+export const formatNumber = (number, digits = 0) => {
   if (number < 1000) {
     return number.toString();
   } else if (number < 1_000_000) {
-    return (number / 1000).toFixed(1) + "k";
+    return (number / 1000).toFixed(digits) + "k";
   } else if (number < 1_000_000_000) {
-    return (number / 1_000_000).toFixed(1) + "M";
+    return (number / 1_000_000).toFixed(digits) + "M";
   } else {
-    return (number / 1_000_000_000).toFixed(1) + "B";
+    return (number / 1_000_000_000).toFixed(digits) + "B";
   }
 };
 

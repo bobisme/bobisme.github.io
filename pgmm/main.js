@@ -14,8 +14,7 @@ mermaid.initialize({
   startOnLoad: true,
   theme: "dark",
   flowchart: {
-    curve: "basis",
-    padding: 30, // Adjust padding as needed
+    curve: "linear",
     useMaxWidth: false,
   },
 });
@@ -176,16 +175,14 @@ const App = () => {
     const rootNodeId = processNode(plan, null, totalExecutionTime);
 
     // Add Start node
-    mermaidCode += `    startNode((Start))\n`;
+    mermaidCode += `    startNode((Q))\n`;
 
     // Add edge from Start node to root node
     const rootRows = plan["Actual Rows"] || 0;
-    mermaidCode += `    startNode -->|${formatNumber(rootRows)} rows| ${rootNodeId}\n`;
+    mermaidCode += `    startNode ---|${formatNumber(rootRows)}| ${rootNodeId}\n`;
 
     // Add class definitions
-    mermaidCode += `
-      classDef start fill:#000000,stroke:#ffffff,stroke-width:2px;
-    `;
+    // mermaidCode += ``;
 
     return mermaidCode;
   };
@@ -209,18 +206,18 @@ const App = () => {
             onChange={(e) => setQueryPlan(e.target.value)}
           ></textarea>
         </div>
-        <div className="mb-4">
-          <label htmlFor="explainAnalyze" className="text-white">
-            EXPLAIN ANALYZE Output (Optional)
-          </label>
-          <textarea
-            id="explainAnalyze"
-            className="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded"
-            placeholder="Paste your EXPLAIN ANALYZE output here (optional)..."
-            value={explainAnalyze}
-            onChange={(e) => setExplainAnalyze(e.target.value)}
-          ></textarea>
-        </div>
+        {/* <div className="mb-4"> */}
+        {/*   <label htmlFor="explainAnalyze" className="text-white"> */}
+        {/*     EXPLAIN ANALYZE Output (Optional) */}
+        {/*   </label> */}
+        {/*   <textarea */}
+        {/*     id="explainAnalyze" */}
+        {/*     className="w-full p-2 mt-1 bg-gray-700 text-white border border-gray-600 rounded" */}
+        {/*     placeholder="Paste your EXPLAIN ANALYZE output here (optional)..." */}
+        {/*     value={explainAnalyze} */}
+        {/*     onChange={(e) => setExplainAnalyze(e.target.value)} */}
+        {/*   ></textarea> */}
+        {/* </div> */}
         {error && (
           <div className="bg-red-600 text-white p-2 rounded mb-4">{error}</div>
         )}
