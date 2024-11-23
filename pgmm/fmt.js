@@ -14,9 +14,9 @@ export const formatNumber = (number, digits = 0) => {
   } else if (number < 1_000_000) {
     return (number / 1000).toFixed(digits) + "k";
   } else if (number < 1_000_000_000) {
-    return (number / 1_000_000).toFixed(digits) + "M";
+    return (number / 1_000_000).toFixed(digits) + "m";
   } else {
-    return (number / 1_000_000_000).toFixed(digits) + "B";
+    return (number / 1_000_000_000).toFixed(digits) + "b";
   }
 };
 
