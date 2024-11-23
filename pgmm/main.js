@@ -1,3 +1,5 @@
+import { formatTime, formatNumber } from "./fmt.js";
+
 const { useState, useEffect } = React;
 
 // Escape function for Mermaid labels
@@ -17,33 +19,6 @@ mermaid.initialize({
     useMaxWidth: false,
   },
 });
-
-// Function to humanize times
-const formatTime = (timeInMs) => {
-  if (timeInMs < 1000) {
-    return `${timeInMs.toFixed(0)}ms`;
-  } else {
-    return `${(timeInMs / 1000).toFixed(2)}s`;
-  }
-};
-
-// Function to format numbers with commas and abbreviations
-const formatNumber = (number) => {
-  if (number < 1000) {
-    return number.toString();
-  } else if (number < 1_000_000) {
-    return (number / 1000).toFixed(1) + "k";
-  } else if (number < 1_000_000_000) {
-    return (number / 1_000_000).toFixed(1) + "M";
-  } else {
-    return (number / 1_000_000_000).toFixed(1) + "B";
-  }
-};
-
-// Function to add commas as thousands separators
-const formatWithCommas = (number) => {
-  return number.toLocaleString();
-};
 
 const App = () => {
   const [queryPlan, setQueryPlan] = useState("");
@@ -139,11 +114,6 @@ const App = () => {
       if (scanTarget) {
         st = ` - <span style=color:lightyellow>${scanTarget}</span>`;
       }
-      // const totalCost = node["Total Cost"]
-      //   ? `Cost: ${node["Total Cost"].toFixed(2)}`
-      //   : "";
-      // const actualRows =
-      //   node["Actual Rows"] !== undefined ? `Rows: ${node["Actual Rows"]}` : "";
       const actualTime = node["Actual Total Time"]
         ? `Time: ${node["Actual Total Time"].toFixed(1)}ms`
         : "";
@@ -177,7 +147,9 @@ const App = () => {
       }
 
       // Add node with class
-      mermaidCode += `    ${currentId}["${escapeMermaidText(nodeLabel)}"]${nodeClass ? `:::${nodeClass}` : ""}\n`;
+      mermaidCode += `    ${currentId}["${escapeMermaidText(
+        nodeLabel,
+      )}"]${nodeClass ? `:::${nodeClass}` : ""}\n`;
 
       // Add edge from parent to current node
       if (parentId !== null) {
@@ -185,7 +157,9 @@ const App = () => {
         if (node["Actual Rows"] !== undefined) {
           edgeLabel = formatNumber(node["Actual Rows"]);
         }
-        mermaidCode += `    ${parentId} -->${edgeLabel ? `|"${edgeLabel}"|` : ""} ${currentId}\n`;
+        mermaidCode += `    ${parentId} ---${
+          edgeLabel ? `|"${edgeLabel}"|` : ""
+        } ${currentId}\n`;
       }
 
       // Process child nodes
@@ -198,13 +172,19 @@ const App = () => {
       return currentId;
     };
 
-    processNode(plan, null, totalExecutionTime);
+    // Process the plan and get the ID of the root node
+    const rootNodeId = processNode(plan, null, totalExecutionTime);
+
+    // Add Start node
+    mermaidCode += `    startNode((Start))\n`;
+
+    // Add edge from Start node to root node
+    const rootRows = plan["Actual Rows"] || 0;
+    mermaidCode += `    startNode -->|${formatNumber(rootRows)} rows| ${rootNodeId}\n`;
+
     // Add class definitions
     mermaidCode += `
-      classDef scan fill:#1e7a96,stroke:#219ebc,stroke-width:2px;
-      classDef join fill:#00b703,stroke:#fb8500,stroke-width:2px;
-      classDef aggregate fill:#9b5de5,stroke:#f15bb5,stroke-width:2px;
-      classDef expensive fill:#00006e,stroke:#8338ec,stroke-width:4px;
+      classDef start fill:#000000,stroke:#ffffff,stroke-width:2px;
     `;
 
     return mermaidCode;
@@ -250,18 +230,6 @@ const App = () => {
           className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-500 disabled:bg-gray-600"
         >
           Visualize Query Plan
-        </button>
-        <button
-          onClick={() => {
-            localStorage.removeItem("savedQueryPlan");
-            setQueryPlan("");
-            setMermaidCode("");
-            setRenderedDiagram("");
-            setShowDiagram(false);
-          }}
-          className="w-full p-2 bg-red-600 text-white rounded hover:bg-red-500 mt-2"
-        >
-          Clear Saved Plan
         </button>
         {showDiagram && (
           <div
