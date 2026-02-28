@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQL Parameterizer</title>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://bobisme.github.io/pgqp/" />
+    <meta property="og:title" content="SQL Query Parameterizer" />
+    <meta
+      property="og:description"
+      content="Format and interpolate PostgreSQL queries."
+    />
+    <meta
+      property="og:image"
+      content="https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/database.svg"
+    />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://bobisme.github.io/pgqp/" />
+    <meta property="twitter:title" content="SQL Query Parameterizer" />
+    <meta
+      property="twitter:description"
+      content="Format and interpolate PostgreSQL queries."
+    />
+    <meta
+      property="twitter:image"
+      content="https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/database.svg"
+    />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/database.svg"
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React and ReactDOM -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- SQL Formatter -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql-formatter/12.2.4/sql-formatter.min.js"></script>
+
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      code[class*="language-"],
+      pre[class*="language-"] {
+        text-shadow: none;
+        background: #1e1e1e;
+      }
+      .token.operator,
+      .token.punctuation {
+        color: #808080;
+      }
+      .token.keyword {
+        color: #569cd6;
+      }
+      .token.string {
+        color: #ce9178;
+      }
+      .token.number {
+        color: #b5cea8;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="bg-zinc-900"></div>
+    <script type="text/babel" src="main.js"></script>
+  </body>
+</html>

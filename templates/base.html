@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="{{ config.description }}" />
+    <title>
+      {% if page and page.title %}
+        {{ page.title }} | {{ config.title }}
+      {% elif section and section.path == "/" %}
+        {{ config.title }}
+      {% elif section and section.title %}
+        {{ section.title }} | {{ config.title }}
+      {% else %}
+        {{ config.title }}
+      {% endif %}
+    </title>
+    <link rel="icon" type="image/png" href="{{ get_url(path='img/bob-deja.png') }}" />
+    <link rel="stylesheet" href="{{ get_url(path='site.css') }}" />
+    <link rel="alternate" type="application/atom+xml" title="{{ config.title }} feed" href="{{ get_url(path='atom.xml') }}" />
+  </head>
+  <body>
+    <div class="halo" aria-hidden="true"></div>
+    <header class="shell topbar">
+      <a class="brand" href="{{ get_url(path='@/_index.md') }}">
+        <img class="brand-mark" src="{{ get_url(path='img/bob-deja.png') }}" alt="Bob logo" />
+        <span>bobisme</span>
+      </a>
+      <nav>
+        <a href="{{ get_url(path='@/_index.md') }}">home</a>
+        <a href="{{ get_url(path='@/blog/_index.md') }}">blog</a>
+        <a href="/pgqp/">pgqp</a>
+        <a href="/pgmm/">pgmm</a>
+      </nav>
+    </header>
+
+    <main class="shell">
+      {% block content %}{% endblock content %}
+    </main>
+
+    <footer class="shell footer">
+      <span>static by design</span>
+      <a href="{{ get_url(path='atom.xml') }}">atom feed</a>
+    </footer>
+  </body>
+</html>
